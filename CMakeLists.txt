@@ -156,3 +156,8 @@ include_directories(libPSI_Tests)
 add_subdirectory(frontend)
 
 
+
+#############################################
+#              Build KKRT service           #
+#############################################
+add_subdirectory(kkrt16_client)

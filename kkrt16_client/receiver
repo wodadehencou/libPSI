@@ -1,0 +1,12 @@
+#!/bin/bash
+
+../bin/kkrt16_client.exe \
+	-in 20w.csv \
+	-out inter.csv \
+	-role receiver \
+	-ss 100000 \
+	-rs 200000 \
+	-addr 127.0.0.1 \
+	-port 7777 \
+	-seed 123 456 789 999
+
