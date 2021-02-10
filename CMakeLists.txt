@@ -161,3 +161,6 @@ add_subdirectory(frontend)
 #              Build KKRT service           #
 #############################################
 add_subdirectory(kkrt16_client)
+
+add_subdirectory(kkrt16_lib)
+include_directories(kkrt16_lib)
