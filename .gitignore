@@ -224,3 +224,6 @@ CMakeCache.txt
 *.a
 
 *.json
+
+# clangd cache
+.clangd
