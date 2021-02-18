@@ -54,6 +54,13 @@ std::vector<osuCrypto::block> load_input(std::string fileName) {
 
   char *line = NULL;
   size_t len = 0;
+
+  // do not use first line: column name
+  if ((getline(&line, &len, fp)) == -1) {
+      printf("first line not exist");
+      exit(EXIT_FAILURE);
+  }
+
   while ((getline(&line, &len, fp)) != -1) {
     if (len < 32) {
       printf("length not valid line = %s", line);
@@ -87,7 +94,7 @@ std::vector<osuCrypto::block> load_input(std::string fileName) {
   return ret;
 }
 
-void store_output(std::string fileName, std::vector<osuCrypto::block> set) {
+void store_output(std::string fileName, std::vector<osuCrypto::u64> set) {
   std::ofstream myFile;
   myFile.open(fileName);
   if (myFile.is_open()) {
@@ -139,7 +146,7 @@ void run_sender(osuCrypto::PRNG &rng, osuCrypto::span<osuCrypto::block> sendSet,
   ios.stop();
 }
 
-std::vector<osuCrypto::block>
+std::vector<osuCrypto::u64>
 run_receiver(osuCrypto::PRNG &rng, osuCrypto::span<osuCrypto::block> recvSet,
              osuCrypto::u64 sendSize, osuCrypto::u64 recvSize,
              networkParams *network, bool malicious, int statSec) {
@@ -185,9 +192,9 @@ run_receiver(osuCrypto::PRNG &rng, osuCrypto::span<osuCrypto::block> recvSet,
   ios.stop();
 
   auto psi = recv.mIntersection.size();
-  std::vector<osuCrypto::block> ret(psi);
+  std::vector<osuCrypto::u64> ret(psi);
   for (auto i = 0; i < psi; ++i) {
-    ret[i] = recvSet[recv.mIntersection[i]];
+    ret[i] = recv.mIntersection[i];
   }
 
   return ret;
@@ -206,8 +213,8 @@ int main(int argc, char **argv) {
     return 0;
   }
 
-  if (cmd.isSet(inFileOpt) == false || cmd.isSet(outFileOpt) == false ||
-      cmd.isSet(roleOpt) == false || cmd.isSet(seedOpt) == false) {
+  if (cmd.isSet(inFileOpt) == false || cmd.isSet(roleOpt) == false ||
+      cmd.isSet(seedOpt) == false) {
     print_help();
     return 1;
   }
@@ -244,7 +251,7 @@ int main(int argc, char **argv) {
       print_help();
       return 1;
     }
-    std::vector<osuCrypto::block> intersection = run_receiver(
+    std::vector<osuCrypto::u64> intersection = run_receiver(
         prng, inSet, cmd.get<osuCrypto::u64>(sendSizeOpt), inSet.size(),
         &network, cmd.isSet(maliciousSecureOpt), cmd.get<int>(statSecOpt));
     store_output(cmd.get<std::string>(outFileOpt), intersection);
